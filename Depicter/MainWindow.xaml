@@ -1,0 +1,74 @@
+﻿<Window x:Class="Depicter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Depicter"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="1332">
+    <Window.Resources>
+        <Style x:Key="DepicterCheckBoxStyle" TargetType="{x:Type CheckBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+
+                        <!-- BulletDecorator is used to provide baseline alignment between the checkmark and the Content -->
+                        <BulletDecorator Background="Transparent">
+                            <BulletDecorator.Bullet>
+                                <Grid Width="25" Height="25">
+                                    <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="Black" BorderThickness="2" CornerRadius="25"/>
+                                    <Path x:Name="CheckMark"
+                                Width="20" Height="20" 
+
+                                SnapsToDevicePixels="False" 
+                                Stroke="Green"
+                                StrokeThickness="4"
+                                          Stretch="Fill"
+                                Data="F1 M 0.468732,4.66838L 3.03345,7.95443L 7.28127,0.420569" />
+                                    
+                                </Grid>
+                            </BulletDecorator.Bullet>
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True"/>
+                        </BulletDecorator>
+
+                        <!-- This uses Visibility to hide and show the CheckMark on IsChecked -->
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" TargetName="CheckMark"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                    
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid Background="Gray">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition />
+            <ColumnDefinition/>
+            <ColumnDefinition />
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="3*"/>
+        </Grid.RowDefinitions>
+        <TextBox Name="urlTextBox" Text="https://www.onthisday.com/images/people/homer-simpson-medium.jpg" Grid.Row="1" Grid.Column="0" Margin="10,0" FontSize="10"/>
+        <Button Grid.Row="2" Grid.Column="0" Margin="10,5" Content="Submit" Click="Button_Click"/>
+        <Button Grid.Row="3" Grid.Column="0" Margin="10,5" Content="Circle" Click="CircleBtn_Click"/>
+        <TextBlock Name="displayTextBlock" Grid.Row="2" Grid.Column="1" Margin="10,5" />
+        
+        <Canvas Grid.Row="0" Grid.RowSpan="5" Grid.Column="1" Grid.ColumnSpan="2" Width="494" Height="418" Background="White" Panel.ZIndex="0"/>
+        <Image Name="originalImage" Grid.Row="0" Grid.RowSpan="5" Grid.Column="1" Grid.ColumnSpan="2" Width="494" Height="418" Panel.ZIndex="1"/>
+        
+        <Canvas Grid.Row="0" Grid.RowSpan="5" Grid.Column="3" Grid.ColumnSpan="2" Width="494" Height="418" Background="White" Panel.ZIndex="0"/>
+        <Image Name="drawingPreview" Grid.Row="0" Grid.RowSpan="5" Grid.Column="3" Grid.ColumnSpan="2" Width="494" Height="418" Panel.ZIndex="1"/>
+        <WrapPanel Name="wrapPanel" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" >
+        </WrapPanel>
+    </Grid>
+</Window>
