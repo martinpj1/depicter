@@ -1,20 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using CheckBox = System.Windows.Controls.CheckBox;
+using static Depicter.Utils;
 
 namespace Depicter
 {
@@ -22,34 +13,9 @@ namespace Depicter
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {        
-        public MainWindow()
-        {
-            InitializeComponent();
-            Style depicterStyle = (Style)this.Resources["DepicterCheckBoxStyle"];
-            foreach (var color in DepicterColors)
-            {
-                wrapPanel.Children.Add(new CheckBox()
-                {
-                    Style = depicterStyle,
-                    Background = new SolidColorBrush(color)
-                });
-            }
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var image = new BitmapImage(new Uri(urlTextBox.Text, UriKind.Absolute));                
-                image.DownloadCompleted += OnImageDownloadCompleted;
-            }catch(Exception ex)
-            {
-                urlTextBox.Text = "";
-            }            
-        }
-    
-        List<Color> DepicterColors = new List<Color>()
+    {
+        #region fields
+        List<Color> AllDepicterColors = new List<Color>()
         {
             Color.FromRgb(0,0,0),
             Color.FromRgb(87,87,87),
@@ -73,9 +39,70 @@ namespace Depicter
             Color.FromRgb(255,255,255)
         };
 
+        List<Color> UsedDepicterColors = new List<Color>();
+        #endregion
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            Style depicterStyle = (Style)this.Resources["DepicterCheckBoxStyle"];
+
+            foreach (var color in AllDepicterColors)
+            {
+                var checkbox = new CheckBox()
+                {
+                    Style = depicterStyle,
+                    Background = new SolidColorBrush(color),
+                    IsChecked = true
+                };
+                checkbox.Checked += Checkbox_Toggled;
+                checkbox.Unchecked += Checkbox_Toggled;
+
+                wrapPanel.Children.Add(checkbox);
+
+                UsedDepicterColors.Add(color);
+            }
+
+        }
+
+        #region events
+        private void CircleBtn_Click(object sender, RoutedEventArgs e)
+        {
+            DrawCircle();
+        }
+
+        private void Checkbox_Toggled(object sender, RoutedEventArgs e)
+        {
+            var checkbox = sender as CheckBox;
+            var color = (checkbox.Background as SolidColorBrush).Color;
+
+            if (checkbox?.IsChecked ?? false)
+            {
+                UsedDepicterColors.Add(color);
+            }
+            else
+            {
+                UsedDepicterColors.Remove(color);
+            }
+        }
+
+        private void URLBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var image = new BitmapImage(new Uri(urlTextBox.Text, UriKind.Absolute));
+                image.DownloadCompleted += OnImageDownloadCompleted;
+                Console.WriteLine("finihsed!");
+            }
+            catch (Exception ex)
+            {
+                urlTextBox.Text = "";
+            }
+        }
+
         private void OnImageDownloadCompleted(object sender, EventArgs e)
         {
-            var image = sender as BitmapImage;            
+            var image = sender as BitmapImage;
 
             BitmapSource bitmapSource = new FormatConvertedBitmap(image, PixelFormats.Pbgra32, null, 0);
             WriteableBitmap modifiedImage = new WriteableBitmap(bitmapSource);
@@ -88,18 +115,18 @@ namespace Depicter
             modifiedImage.CopyPixels(pixelData, widthInByte, 0);
 
             for (int i = 0; i < pixelData.Length; i++)
-            {                
+            {
                 byte alpha = (byte)((pixelData[i] & 0xff000000) >> 24);
                 byte red = (byte)((pixelData[i] & 0x00ff0000) >> 16);
                 byte green = (byte)((pixelData[i] & 0x0000ff00) >> 8);
                 byte blue = (byte)(pixelData[i] & 0x000000ff);
 
                 var pixelColor = Color.FromRgb(red, green, blue);
-                
+
                 var depicterColor = Colors.White;
                 int minimum = int.MaxValue;
 
-                foreach(var color in DepicterColors)
+                foreach (var color in AllDepicterColors)
                 {
                     int distance = colorDistance(pixelColor, color);
                     if (distance < minimum)
@@ -122,31 +149,14 @@ namespace Depicter
             drawingPreview.Source = modifiedImage;
             originalImage.Source = image;
         }
-
-        // distance in RGB space
-        private int colorDistance(Color c1, Color c2)
-        {
-            int rDist = c1.R - c2.R;
-            int gDist = c1.G - c2.G;
-            int bDist = c1.B - c2.B;
-            return (int)Math.Sqrt((rDist * rDist)
-                                   + (gDist * gDist)
-                                   + (bDist * bDist));
-        }
-
-
-
-        private void CircleBtn_Click(object sender, RoutedEventArgs e)
-        {
-            DrawCircle();
-        }
+        #endregion
 
         private void DrawCircle()
         {
             // move to center of screen
             int centerX = 65535 / 2;
             int centerY = 65535 / 2;
-            int radius = (int)(65535 * 0.05); 
+            int radius = (int)(65535 * 0.05);
             VirtualMouse.MoveTo(centerX + radius, centerY);
 
             int numSteps = 50;
@@ -164,7 +174,7 @@ namespace Depicter
             for (int i = 0; i < numSteps; i++)
             {
                 int x = (int)(centerX + radius * Math.Cos(theta));
-                int y = (int)(centerY + yScaleFactor * radius * Math.Sin(theta));    
+                int y = (int)(centerY + yScaleFactor * radius * Math.Sin(theta));
                 VirtualMouse.MoveTo(x, y);
 
                 theta += stepSize;

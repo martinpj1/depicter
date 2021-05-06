@@ -59,7 +59,7 @@
             <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
         <TextBox Name="urlTextBox" Text="https://www.onthisday.com/images/people/homer-simpson-medium.jpg" Grid.Row="1" Grid.Column="0" Margin="10,0" FontSize="10"/>
-        <Button Grid.Row="2" Grid.Column="0" Margin="10,5" Content="Submit" Click="Button_Click"/>
+        <Button Grid.Row="2" Grid.Column="0" Margin="10,5" Content="Submit" Click="URLBtn_Click"/>
         <Button Grid.Row="3" Grid.Column="0" Margin="10,5" Content="Circle" Click="CircleBtn_Click"/>
         <TextBlock Name="displayTextBlock" Grid.Row="2" Grid.Column="1" Margin="10,5" />
         
@@ -68,7 +68,6 @@
         
         <Canvas Grid.Row="0" Grid.RowSpan="5" Grid.Column="3" Grid.ColumnSpan="2" Width="494" Height="418" Background="White" Panel.ZIndex="0"/>
         <Image Name="drawingPreview" Grid.Row="0" Grid.RowSpan="5" Grid.Column="3" Grid.ColumnSpan="2" Width="494" Height="418" Panel.ZIndex="1"/>
-        <WrapPanel Name="wrapPanel" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" >
-        </WrapPanel>
+        <WrapPanel Name="wrapPanel" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" />
     </Grid>
 </Window>
